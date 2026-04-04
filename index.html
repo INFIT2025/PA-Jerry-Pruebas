@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="INFIT VIP">
-    <title>INFIT VIP | Tu Mejor Versión</title>
+    <title>INFIT VIP | Tu Mejor Version</title>
     <link rel="icon" type="image/png" sizes="512x512" href="https://z-cdn-media.chatglm.cn/files/af0a5deb-18dd-448b-8020-2b0299763490.png?auth_key=1875235526-bb8efeda64d1435091fe29204e8011a3-0-fe17e178cbb6285fefcf870f31c85b33">
     <link rel="icon" type="image/png" sizes="192x192" href="https://z-cdn-media.chatglm.cn/files/a1de3888-585c-4351-b383-9e9eb3867197.png?auth_key=1875235526-14bdfc3523474844a9ebc8b68ada0f59-0-b787c12e1275b7d78847b8629af22d3d">
     <link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/a1de3888-585c-4351-b383-9e9eb3867197.png?auth_key=1875235526-14bdfc3523474844a9ebc8b68ada0f59-0-b787c12e1275b7d78847b8629af22d3d">
@@ -28,7 +28,10 @@
         @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
         @keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(255,215,0,0.4)}70%{box-shadow:0 0 0 15px rgba(255,215,0,0)}100%{box-shadow:0 0 0 0 rgba(255,215,0,0)}}
         @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes bounce-soft{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
         .fade-in{animation:fadeIn 0.5s ease-out forwards}
+        .slide-up{animation:slideUp 0.6s ease-out forwards}
         .shimmer-text{background:linear-gradient(90deg,#FFD700 0%,#FFF 50%,#FFD700 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite}
         .tab-btn.active{color:#000;background:#FFD700;font-weight:bold}
         .tab-btn{color:#888;border:1px solid #333;transition:all 0.3s}
@@ -51,21 +54,23 @@
         ::-webkit-scrollbar{width:6px}
         ::-webkit-scrollbar-track{background:#0f0f0f}
         ::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+        .install-btn-native{animation:bounce-soft 2s ease-in-out infinite}
+        .pwa-icon{animation:float 3s ease-in-out infinite}
     </style>
 </head>
 <body class="overflow-x-hidden pb-24">
 
-    <!-- MODAL DE INSTALACIÓN PWA -->
+    <!-- MODAL DE INSTALACION PWA - APARECE AL GENERAR EL PLAN -->
     <div id="pwa-install-modal">
         <div class="max-w-sm w-full px-4">
             <div class="mb-6">
-                <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden shadow-2xl" style="animation:float 3s ease-in-out infinite">
+                <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden shadow-2xl pwa-icon">
                     <img src="https://z-cdn-media.chatglm.cn/files/a1de3888-585c-4351-b383-9e9eb3867197.png?auth_key=1875235526-14bdfc3523474844a9ebc8b68ada0f59-0-b787c12e1275b7d78847b8629af22d3d" alt="INFIT" class="w-full h-full object-cover">
                 </div>
             </div>
             
             <h2 class="text-2xl font-heading font-bold text-white mb-2">Instala Tu Plan como App</h2>
-            <p class="text-gray-400 text-sm mb-6">Acceso directo desde tu pantalla de inicio.</p>
+            <p class="text-gray-400 text-sm mb-6">Acceso directo desde tu pantalla de inicio. Funciona sin internet.</p>
 
             <div id="ios-instructions" class="hidden">
                 <div class="glass-panel rounded-xl p-5 mb-4 text-left">
@@ -79,7 +84,7 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-bold">Toca el boton Compartir</p>
-                                <p class="text-gray-500 text-xs">Esta abajo a la derecha</p>
+                                <p class="text-gray-500 text-xs">Cuadrado con flecha arriba, abajo a la derecha</p>
                             </div>
                         </div>
                         <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
@@ -88,7 +93,7 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-bold">Busca "Agregar a pantalla de inicio"</p>
-                                <p class="text-gray-500 text-xs">Icono con signo +</p>
+                                <p class="text-gray-500 text-xs">Icono con signo + negro</p>
                             </div>
                         </div>
                         <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
@@ -96,8 +101,8 @@
                                 <span class="text-gold font-bold text-sm">3</span>
                             </div>
                             <div>
-                                <p class="text-white text-sm font-bold">Toca "Agregar"</p>
-                                <p class="text-gray-500 text-xs">Listo!</p>
+                                <p class="text-white text-sm font-bold">Toca "Agregar" arriba a la derecha</p>
+                                <p class="text-gray-500 text-xs">Listo! Tu plan estara en tu pantalla</p>
                             </div>
                         </div>
                     </div>
@@ -116,7 +121,7 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-bold">Toca los 3 puntos arriba a la derecha</p>
-                                <p class="text-gray-500 text-xs">Menu del navegador</p>
+                                <p class="text-gray-500 text-xs">Menu del navegador Chrome</p>
                             </div>
                         </div>
                         <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
@@ -124,7 +129,8 @@
                                 <span class="text-blue-400 font-bold text-sm">2</span>
                             </div>
                             <div>
-                                <p class="text-white text-sm font-bold">Selecciona "Agregar a pantalla de inicio"</p>
+                                <p class="text-white text-sm font-bold">Selecciona "Instalar aplicacion"</p>
+                                <p class="text-gray-500 text-xs">O "Agregar a pantalla de inicio"</p>
                             </div>
                         </div>
                     </div>
@@ -143,6 +149,7 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-bold">Busca el icono de instalacion en la barra de direcciones</p>
+                                <p class="text-gray-500 text-xs">Un circulo con un + o un icono de descarga</p>
                             </div>
                         </div>
                         <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
@@ -157,7 +164,7 @@
                 </div>
             </div>
 
-            <button id="install-btn-native" class="hidden w-full py-4 bg-gradient-to-r from-gold to-yellow-500 rounded-xl text-black font-heading font-bold uppercase tracking-widest text-sm mb-4">
+            <button id="install-btn-native" class="hidden w-full py-4 bg-gradient-to-r from-gold to-yellow-500 rounded-xl text-black font-heading font-bold uppercase tracking-widest text-sm mb-4 install-btn-native">
                 <i class="fas fa-download mr-2"></i> INSTALAR AHORA
             </button>
 
@@ -192,7 +199,7 @@
         </div>
     </div>
 
-    <!-- PANTALLA DE BLOQUEO -->
+    <!-- PANTALLA DE BLOQUEO - INGRESO UNICO DE TELEFONO -->
     <div id="lock-screen">
         <div class="text-center p-8 max-w-sm w-full relative z-10">
             <div class="mb-4 inline-block p-4 rounded-full bg-yellow-500/10 border border-yellow-500/20">
@@ -200,7 +207,7 @@
             </div>
             <h1 class="text-3xl font-heading font-bold italic mb-1 tracking-widest text-white">TU MEJOR <span class="text-gold">VERSION</span></h1>
             <p class="text-gray-400 text-xs uppercase tracking-widest mb-4">Acceso Nivel 1</p>
-            <div class="px-2 mb-6"><p class="text-[13px] italic text-gray-300 font-serif leading-relaxed">"La preparación de hoy es el éxito de mañana."</p></div>
+            <div class="px-2 mb-6"><p class="text-[13px] italic text-gray-300 font-serif leading-relaxed">"La preparacion de hoy es el exito de manana."</p></div>
             <div class="bg-gray-900/60 border border-gray-800 p-4 rounded-xl mb-4">
                 <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">TIPO DE PLAN</p>
                 <p class="text-sm font-bold text-yellow-400 italic">Activo / Deportista</p>
@@ -210,13 +217,14 @@
                 <p class="text-sm font-bold text-gold italic">Cocinar el domingo para la semana</p>
             </div>
             <div id="login-form">
-                <p class="text-[10px] text-gray-500 mb-2">INGRESA TU TELEFONO</p>
+                <p class="text-[10px] text-gray-500 mb-2">INGRESA TU TELEFONO (SOLO UNA VEZ)</p>
                 <div class="relative mb-4">
                     <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"><i class="fas fa-phone"></i></span>
                     <input type="text" id="pass-input" placeholder="Ej. 7711234567" class="w-full bg-panel border border-gray-800 rounded-lg py-4 pl-12 pr-4 text-white font-bold focus:border-gold focus:outline-none placeholder:text-gray-600 transition-colors">
                 </div>
                 <button onclick="checkAccess()" id="btn-entrar" class="w-full bg-gold text-black font-bold py-4 rounded-lg uppercase tracking-wider font-heading hover:bg-yellow-400 transition">Desbloquear Mi Plan</button>
                 <p id="error-msg" class="text-red-500 text-xs mt-4 hidden bg-red-500/10 p-2 rounded"><i class="fas fa-exclamation-triangle"></i> Numero incorrecto.</p>
+                <p class="text-[9px] text-gray-600 mt-3"><i class="fas fa-lock text-gold/50 mr-1"></i>Este numero sera tu acceso permanente</p>
             </div>
             <div id="login-loader" class="hidden flex-col items-center justify-center py-8">
                 <div class="spinner mb-4"></div>
@@ -238,7 +246,7 @@
                         <i class="fas fa-layer-group text-gold text-sm"></i>
                         <span class="text-gold font-bold text-sm uppercase">Nivel 1 Activado</span>
                     </div>
-                    <p class="text-gray-400 text-sm leading-relaxed mt-4">¡Estás comenzando tu transformación!</p>
+                    <p class="text-gray-400 text-sm leading-relaxed mt-4">Estas comenzando tu transformacion!</p>
                 </div>
                 <div class="glass-panel rounded-2xl p-5 mb-6 fade-in">
                     <div class="flex items-center gap-2 mb-4">
@@ -343,7 +351,7 @@
             <div class="px-5 py-4 flex justify-between items-center">
                 <div>
                     <h2 class="text-xl font-heading font-bold italic">TU MEJOR <span class="text-gradient">VERSION</span></h2>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Hola, JERRY</p>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Hola, JERRY REYES</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <div class="h-8 w-8 rounded-full bg-panel border border-gold/30 flex items-center justify-center">
@@ -483,7 +491,7 @@
             <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">3 huevos revueltos con 2 tortillas y 1/2 taza de frijoles.</p></div>
             <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 manzana con 10 almendras.</p></div>
             <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">150g de pechuga de pollo con 1 taza de arroz y ensalada.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 taza de yogurt griego sin azúcar.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 taza de yogurt griego sin azucar.</p></div>
             <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">120g de carne magra con verduras al vapor.</p></div>
         </div>
 
@@ -494,9 +502,9 @@
                 <span class="text-[10px] text-blue-400 float-right">Mar, Jue, Sab</span>
             </div>
             <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Omelette de 3 claras con espinacas y 2 tortillas.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 plátano con crema de cacahuate.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 platano con crema de cacahuate.</p></div>
             <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">150g de pescado con 1 taza de arroz integral.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 puño de nueces.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 puno de nueces.</p></div>
             <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">150g de pollo a la plancha con ensalada verde.</p></div>
         </div>
 
@@ -556,9 +564,9 @@
         <section class="p-5 mt-4" id="shopping-list-section">
             <div class="glass rounded-2xl p-6">
                 <h3 class="font-heading font-bold text-gold mb-4"><i class="fas fa-shopping-basket mr-2"></i>LISTA DE SUPER</h3>
-                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-drumstick-bite text-red-400 mr-2"></i>Proteinas</p><p class="text-xs text-gray-300">Pechuga de pollo (fresca), Bistec de res (sirloin o similar, magro), Carne molida de res (90/10), Puntas de res (magras), Atún en agua (latas), Huevos, Claras de huevo (líquidas o frescas), Pechuga de pavo ahumada (bajo sodio), Requesón (o Queso Cottage light), Yogurt griego natural (sin azúcar), Frijoles negros (secos o enlatados sin sodio), Lentejas (secas).</p></div>
-                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-bread-slice text-yellow-400 mr-2"></i>Carbohidratos</p><p class="text-xs text-gray-300">Tortillas de maíz, Arroz blanco, Galletas integrales, Tostadas de maíz horneadas, Papa.</p></div>
-                <div><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-leaf text-green-400 mr-2"></i>Verduras y Frutas</p><p class="text-xs text-gray-300">Nopales (frescos o envasados sin sodio), Aguacate, Jitomate, Cebolla, Pimiento (verde/rojo), Pepino, Jícama, Calabacitas, Zanahoria, Pera, Durazno, Salsa ranchera (casera o comercial baja en sodio/grasas), Chiles (serrano/jalapeño), Almendras (fruto seco, pero categorizado aquí para simplicidad de compra), Crema ligera (o yogur natural para sustituir), Aceite de cocina (oliva/aguacate, para saltear).</p></div>
+                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-drumstick-bite text-red-400 mr-2"></i>Proteinas</p><p class="text-xs text-gray-300">Pechuga de pollo (deshebrada, picada, en fajitas), Bistec de res magro, Huevos (enteros), Requesón bajo en grasa, Filete de tilapia/huachinango/bacalao, Lomo de cerdo magro, Atún en agua.</p></div>
+                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-bread-slice text-yellow-400 mr-2"></i>Carbohidratos</p><p class="text-xs text-gray-300">Tortillas de maíz, Frijoles (de la olla), Arroz blanco, Avena en hojuelas, Lentejas, Melón/Papaya (o fruta de temporada), Nueces, Almendras, Galletas integrales.</p></div>
+                <div><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-leaf text-green-400 mr-2"></i>Verduras y Frutas</p><p class="text-xs text-gray-300">Aguacate, Nopalitos, Tomate verde, Chiles (varios tipos para salsas), Cebolla, Cilantro, Brócoli, Zanahoria, Calabacitas, Ejotes, Pimiento morrón, Lechuga, Pepino, Elote (maíz), Ajo, Limón, Aceitunas (para Veracruzana).</p></div>
             </div>
         </section>
         <div class="h-10"></div>
@@ -567,7 +575,7 @@
     <script>
         const CLIENT_PHONE="5535766379";
         const MASTER_KEY="INFIT2026PRO";
-        const userName="JERRY";
+        const userName="JERRY REYES";
         const userLevel=1;
         const startDate=new Date("2026-04-04T00:00:00");
         const endDate=new Date(startDate);
@@ -664,14 +672,18 @@
                 db=firebase.database();
             }catch(e){console.error("Firebase:",e)}
 
+            // Verificar si ya esta autenticado y completo el welcome
             const authToken=localStorage.getItem('infit_token_'+userId);
             const welcomeComplete=localStorage.getItem('infit_welcome_'+userId);
             
             if(authToken==='authorized' && welcomeComplete==='done'){
+                // Ya paso todo el flujo - mostrar modal PWA y luego app
                 verifyDeviceBeforeLaunch();
             }else if(authToken==='authorized'){
+                // Autenticado pero falta welcome
                 verifyDeviceBeforeWelcome();
             }
+            // Si no esta autenticado, se queda en lock-screen
         };
 
         document.getElementById('install-btn-native').addEventListener('click',async()=>{
@@ -714,12 +726,14 @@
 
             document.getElementById('error-msg').classList.add('hidden');
             
+            // Acceso con llave maestra del admin
             if(inputMaster===MASTER_KEY){
                 localStorage.setItem('infit_token_'+userId,'authorized');
                 showWelcomeScreen();
                 return;
             }
 
+            // Acceso con telefono del cliente (UNA SOLA VEZ)
             if(inputPhone===CLIENT_PHONE){
                 document.getElementById('login-form').style.display='none';
                 document.getElementById('login-loader').style.display='flex';
@@ -737,14 +751,17 @@
                     const savedDevice=snapshot.val();
                     
                     if(!savedDevice){
+                        // Primera vez - registrar dispositivo
                         deviceRef.set(currentDeviceId).then(()=>{
                             localStorage.setItem('infit_token_'+userId,'authorized');
                             showWelcomeScreen();
                         });
                     }else if(savedDevice===currentDeviceId){
+                        // Mismo dispositivo - permitir acceso
                         localStorage.setItem('infit_token_'+userId,'authorized');
                         showWelcomeScreen();
                     }else{
+                        // Dispositivo diferente - bloquear
                         document.getElementById('login-loader').style.display='none';
                         document.getElementById('login-form').style.display='block';
                         document.getElementById('lock-screen').style.display='none';
@@ -787,12 +804,13 @@
             setTimeout(()=>{
                 document.getElementById('welcome-screen').style.display='none';
                 launchApp();
-                setTimeout(()=>showPWAModal(),1000);
+                // Mostrar modal de instalacion PWA despues de lanzar la app
+                setTimeout(()=>showPWAModal(),800);
             },500);
         }
 
         function showPWAModal(){
-            const dismissed=localStorage.getItem('pwa_modal_dismissed');
+            const dismissed=localStorage.getItem('pwa_modal_dismissed_'+userId);
             if(!dismissed){
                 document.getElementById('pwa-install-modal').style.display='flex';
             }
@@ -800,7 +818,7 @@
 
         function closePWAModal(){
             document.getElementById('pwa-install-modal').style.display='none';
-            localStorage.setItem('pwa_modal_dismissed','true');
+            localStorage.setItem('pwa_modal_dismissed_'+userId,'true');
         }
 
         function launchApp(){
