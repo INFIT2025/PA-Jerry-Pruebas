@@ -30,6 +30,7 @@
         @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
         @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
         @keyframes bounce-soft{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+        @keyframes admin-pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)}70%{box-shadow:0 0 0 10px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
         .fade-in{animation:fadeIn 0.5s ease-out forwards}
         .slide-up{animation:slideUp 0.6s ease-out forwards}
         .shimmer-text{background:linear-gradient(90deg,#FFD700 0%,#FFF 50%,#FFD700 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite}
@@ -46,6 +47,7 @@
         #level-expired{position:fixed;inset:0;z-index:9950;background:#050505;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
         #device-blocked{position:fixed;inset:0;z-index:9999;background:#0a0000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
         #pwa-install-modal{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.95);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+        #admin-mode-banner{position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#22c55e,#16a34a);color:#000;padding:8px 16px;text-align:center;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:1px;display:none;animation:admin-pulse 2s infinite}
         .spinner{width:40px;height:40px;border:3px solid rgba(255,215,0,0.3);border-radius:50%;border-top-color:#FFD700;animation:spin 1s ease-in-out infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
         .progress-day-badge{animation:pulse-ring 2s infinite}
@@ -60,7 +62,12 @@
 </head>
 <body class="overflow-x-hidden pb-24">
 
-    <!-- MODAL DE INSTALACION PWA - APARECE AL GENERAR EL PLAN -->
+    <!-- BANNER MODO ADMIN -->
+    <div id="admin-mode-banner">
+        <i class="fas fa-shield-alt mr-2"></i>MODO ADMIN - Vista de Previsualizacion (Llave Maestra)
+    </div>
+
+    <!-- MODAL DE INSTALACION PWA -->
     <div id="pwa-install-modal">
         <div class="max-w-sm w-full px-4">
             <div class="mb-6">
@@ -217,18 +224,17 @@
                 <p class="text-sm font-bold text-gold italic">Cocinar el domingo para la semana</p>
             </div>
             <div id="login-form">
-                <p class="text-[10px] text-gray-500 mb-2">INGRESA TU TELEFONO (SOLO UNA VEZ)</p>
+                <p class="text-[10px] text-gray-500 mb-2">INGRESA TU TELEFONO</p>
                 <div class="relative mb-4">
                     <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"><i class="fas fa-phone"></i></span>
                     <input type="text" id="pass-input" placeholder="Ej. 7711234567" class="w-full bg-panel border border-gray-800 rounded-lg py-4 pl-12 pr-4 text-white font-bold focus:border-gold focus:outline-none placeholder:text-gray-600 transition-colors">
                 </div>
                 <button onclick="checkAccess()" id="btn-entrar" class="w-full bg-gold text-black font-bold py-4 rounded-lg uppercase tracking-wider font-heading hover:bg-yellow-400 transition">Desbloquear Mi Plan</button>
-                <p id="error-msg" class="text-red-500 text-xs mt-4 hidden bg-red-500/10 p-2 rounded"><i class="fas fa-exclamation-triangle"></i> Numero incorrecto.</p>
-                <p class="text-[9px] text-gray-600 mt-3"><i class="fas fa-lock text-gold/50 mr-1"></i>Este numero sera tu acceso permanente</p>
+                <p id="error-msg" class="text-red-500 text-xs mt-4 hidden bg-red-500/10 p-2 rounded"><i class="fas fa-exclamation-triangle"></i> Telefono incorrecto.</p>
             </div>
             <div id="login-loader" class="hidden flex-col items-center justify-center py-8">
                 <div class="spinner mb-4"></div>
-                <p class="text-gray-400 text-sm">Verificando dispositivo...</p>
+                <p class="text-gray-400 text-sm">Verificando acceso...</p>
             </div>
         </div>
     </div>
@@ -488,11 +494,11 @@
                 <h4 class="font-bold text-orange-400 text-sm"><i class="fas fa-utensils mr-2"></i>Domingo: Comida Trampa</h4>
                 <p class="text-xs text-gray-300 mt-1">Disfruta UNA comida libre.</p>
             </div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">3 huevos revueltos con 2 tortillas y 1/2 taza de frijoles.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 manzana con 10 almendras.</p></div>
-            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">150g de pechuga de pollo con 1 taza de arroz y ensalada.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 taza de yogurt griego sin azucar.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">120g de carne magra con verduras al vapor.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Huevos revueltos (1 huevo entero + 3 claras) con 100g de pechuga de pollo deshebrada, 150g de nopales cocidos y 2 tortillas de maíz (100g). Acompañar con 45g de aguacate. Cocinar con 5g de aceite de oliva.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">170g de yogur griego natural sin azúcar (0% grasa) con 25g de nueces.</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">200g de pechuga de pollo asada con salsa verde (sin crema). Acompañar con 120g de arroz integral cocido, 150g de frijoles de la olla cocidos y 200g de verduras al vapor (calabacitas y zanahoria). Cocinar con 10g de aceite de oliva.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">2 tostadas horneadas (30g) con 1 lata de atún en agua (100g escurrido), 30g de aguacate y 100g de pico de gallo.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">180g de bistec de res magro asado con 200g de nopales cocidos y 100g de rajas de chile poblano. Cocinar con 5g de aceite de oliva.</p></div>
         </div>
 
         <!-- VARIACION 2 -->
@@ -501,11 +507,11 @@
                 <span class="text-xs font-bold text-white">Variacion 2</span>
                 <span class="text-[10px] text-blue-400 float-right">Mar, Jue, Sab</span>
             </div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Omelette de 3 claras con espinacas y 2 tortillas.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 platano con crema de cacahuate.</p></div>
-            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">150g de pescado con 1 taza de arroz integral.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 puno de nueces.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">150g de pollo a la plancha con ensalada verde.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Enfrijoladas de pollo: 2 tortillas de maíz (100g) rellenas con 120g de pechuga de pollo deshebrada, bañadas en salsa de frijol (preparada con 150g de frijoles cocidos y 5g de aceite de oliva). Cubrir con 50g de queso fresco desmoronado, cebolla picada y 30g de aguacate.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">170g de requesón con 100g de papaya picada y 10g de semillas de chía.</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">200g de carne de res magra en salsa roja (con chiles guajillo/ancho, jitomate). Acompañar con 200g de papas cocidas y 150g de nopales salteados. Cocinar con 10g de aceite de oliva.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">3 huevos cocidos (2 enteros + 1 clara) acompañados de 200g de pepino en rodajas con un poco de Tajín.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Fajitas de pollo: 190g de pechuga de pollo cortada en tiras, salteada con 200g de pimientos (rojo, verde) y cebolla. Acompañar con 80g de quinoa cocida. Cocinar con 10g de aceite de oliva.</p></div>
         </div>
 
         <!-- RETO -->
@@ -564,9 +570,9 @@
         <section class="p-5 mt-4" id="shopping-list-section">
             <div class="glass rounded-2xl p-6">
                 <h3 class="font-heading font-bold text-gold mb-4"><i class="fas fa-shopping-basket mr-2"></i>LISTA DE SUPER</h3>
-                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-drumstick-bite text-red-400 mr-2"></i>Proteinas</p><p class="text-xs text-gray-300">Pechuga de pollo (deshebrada, picada, en fajitas), Bistec de res magro, Huevos (enteros), Requesón bajo en grasa, Filete de tilapia/huachinango/bacalao, Lomo de cerdo magro, Atún en agua.</p></div>
-                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-bread-slice text-yellow-400 mr-2"></i>Carbohidratos</p><p class="text-xs text-gray-300">Tortillas de maíz, Frijoles (de la olla), Arroz blanco, Avena en hojuelas, Lentejas, Melón/Papaya (o fruta de temporada), Nueces, Almendras, Galletas integrales.</p></div>
-                <div><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-leaf text-green-400 mr-2"></i>Verduras y Frutas</p><p class="text-xs text-gray-300">Aguacate, Nopalitos, Tomate verde, Chiles (varios tipos para salsas), Cebolla, Cilantro, Brócoli, Zanahoria, Calabacitas, Ejotes, Pimiento morrón, Lechuga, Pepino, Elote (maíz), Ajo, Limón, Aceitunas (para Veracruzana).</p></div>
+                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-drumstick-bite text-red-400 mr-2"></i>Proteinas</p><p class="text-xs text-gray-300">Pechuga de pollo (aprox. 1.5 kg), Bistec de res magro (aprox. 400g), Huevos (2-3 cartones), Atún en agua (2 latas de 100g escurrido), Yogur Griego Natural sin azúcar (500g), Requesón (350g), Queso fresco o panela (100g), Frijoles secos (aprox. 500g).</p></div>
+                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-bread-slice text-yellow-400 mr-2"></i>Carbohidratos</p><p class="text-xs text-gray-300">Tortillas de maíz (1 paquete grande), Arroz Integral (aprox. 200g), Papas (aprox. 400g), Quinoa (aprox. 100g), Semillas de Chía (1 paquete).</p></div>
+                <div><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-leaf text-green-400 mr-2"></i>Verduras y Frutas</p><p class="text-xs text-gray-300">Nopales (aprox. 1 kg), Aguacate (4-5 piezas), Nueces (1 paquete pequeño), Papaya (1 pieza grande), Pimientos (rojo y verde, 2 de cada uno), Cebolla (2-3 piezas), Jitomate (4-5 piezas), Chiles (serrano/jalapeño para pico de gallo, poblano para rajas, guajillo/ancho para salsa), Calabacitas (2-3 piezas), Zanahoria (2-3 piezas), Pepino (1-2 piezas), Aceite de Oliva (1 botella), Tajín (1 bote pequeño).</p></div>
             </div>
         </section>
         <div class="h-10"></div>
@@ -588,6 +594,7 @@
         let selectedObjective=null;
         let progressData=Array(30).fill(false);
         const userId=userName.toLowerCase().replace(/[^a-z0-9]/g,'');
+        let isAdminMode=false;
 
         const firebaseConfig={
             apiKey:"AIzaSyAv1BfTCiQWgPXvtpMW14RdhbLyY4yGtiY",
@@ -672,18 +679,24 @@
                 db=firebase.database();
             }catch(e){console.error("Firebase:",e)}
 
-            // Verificar si ya esta autenticado y completo el welcome
+            // Verificar si ya esta autenticado
             const authToken=localStorage.getItem('infit_token_'+userId);
             const welcomeComplete=localStorage.getItem('infit_welcome_'+userId);
+            const adminModeFlag=localStorage.getItem('infit_admin_mode_'+userId);
             
             if(authToken==='authorized' && welcomeComplete==='done'){
-                // Ya paso todo el flujo - mostrar modal PWA y luego app
+                if(adminModeFlag==='true'){
+                    isAdminMode=true;
+                    document.getElementById('admin-mode-banner').style.display='block';
+                }
                 verifyDeviceBeforeLaunch();
             }else if(authToken==='authorized'){
-                // Autenticado pero falta welcome
+                if(adminModeFlag==='true'){
+                    isAdminMode=true;
+                    document.getElementById('admin-mode-banner').style.display='block';
+                }
                 verifyDeviceBeforeWelcome();
             }
-            // Si no esta autenticado, se queda en lock-screen
         };
 
         document.getElementById('install-btn-native').addEventListener('click',async()=>{
@@ -696,6 +709,12 @@
         });
 
         async function verifyDeviceBeforeLaunch(){
+            // Si es modo admin, saltar verificacion de dispositivo
+            if(isAdminMode){
+                launchApp();
+                return;
+            }
+            
             const currentDeviceId=getStoredDeviceId();
             if(!db){launchApp();return;}
             const deviceRef=db.ref('users/'+userId+'/deviceId');
@@ -708,6 +727,12 @@
         }
 
         async function verifyDeviceBeforeWelcome(){
+            // Si es modo admin, saltar verificacion de dispositivo
+            if(isAdminMode){
+                showWelcomeScreen();
+                return;
+            }
+            
             const currentDeviceId=getStoredDeviceId();
             if(!db){showWelcomeScreen();return;}
             const deviceRef=db.ref('users/'+userId+'/deviceId');
@@ -726,14 +751,24 @@
 
             document.getElementById('error-msg').classList.add('hidden');
             
-            // Acceso con llave maestra del admin
+            // ACCESO CON LLAVE MAESTRA - MODO ADMIN
             if(inputMaster===MASTER_KEY){
+                isAdminMode=true;
                 localStorage.setItem('infit_token_'+userId,'authorized');
-                showWelcomeScreen();
+                localStorage.setItem('infit_admin_mode_'+userId,'true');
+                document.getElementById('admin-mode-banner').style.display='block';
+                
+                // Mostrar mensaje de modo admin
+                document.getElementById('login-form').style.display='none';
+                document.getElementById('login-loader').style.display='flex';
+                
+                setTimeout(()=>{
+                    showWelcomeScreen();
+                },800);
                 return;
             }
 
-            // Acceso con telefono del cliente (UNA SOLA VEZ)
+            // ACCESO CON TELEFONO DEL CLIENTE
             if(inputPhone===CLIENT_PHONE){
                 document.getElementById('login-form').style.display='none';
                 document.getElementById('login-loader').style.display='flex';
@@ -751,17 +786,14 @@
                     const savedDevice=snapshot.val();
                     
                     if(!savedDevice){
-                        // Primera vez - registrar dispositivo
                         deviceRef.set(currentDeviceId).then(()=>{
                             localStorage.setItem('infit_token_'+userId,'authorized');
                             showWelcomeScreen();
                         });
                     }else if(savedDevice===currentDeviceId){
-                        // Mismo dispositivo - permitir acceso
                         localStorage.setItem('infit_token_'+userId,'authorized');
                         showWelcomeScreen();
                     }else{
-                        // Dispositivo diferente - bloquear
                         document.getElementById('login-loader').style.display='none';
                         document.getElementById('login-form').style.display='block';
                         document.getElementById('lock-screen').style.display='none';
@@ -773,6 +805,7 @@
                 });
             }else{
                 document.getElementById('error-msg').classList.remove('hidden');
+                document.getElementById('error-msg').innerHTML='<i class="fas fa-exclamation-triangle"></i> Telefono o llave incorrecta.';
             }
         }
 
@@ -804,7 +837,6 @@
             setTimeout(()=>{
                 document.getElementById('welcome-screen').style.display='none';
                 launchApp();
-                // Mostrar modal de instalacion PWA despues de lanzar la app
                 setTimeout(()=>showPWAModal(),800);
             },500);
         }
@@ -838,6 +870,12 @@
         }
 
         function initFirebaseReto(){
+            // Si es modo admin, no cargar progreso de Firebase
+            if(isAdminMode){
+                renderGrid();
+                return;
+            }
+            
             db.ref('users/'+userId).once('value',(snap)=>{
                 const d=snap.val();
                 if(d&&d.progress)progressData=d.progress;
@@ -862,7 +900,12 @@
         function toggleDay(i){
             progressData[i]=!progressData[i];
             if(progressData[i])confetti({particleCount:50,spread:60,origin:{y:0.8},colors:['#FFD700','#FFF']});
-            if(db)db.ref('users/'+userId).update({name:userName,progress:progressData,lastUpdate:new Date().toISOString()});
+            
+            // Si es modo admin, no guardar en Firebase
+            if(!isAdminMode && db){
+                db.ref('users/'+userId).update({name:userName,progress:progressData,lastUpdate:new Date().toISOString()});
+            }
+            
             renderGrid();
             updateStats();
         }
