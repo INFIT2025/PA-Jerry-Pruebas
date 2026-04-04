@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="INFIT VIP">
+    <title>INFIT VIP | Tu Mejor Versión</title>
+    <link rel="icon" type="image/png" sizes="512x512" href="https://z-cdn-media.chatglm.cn/files/af0a5deb-18dd-448b-8020-2b0299763490.png?auth_key=1875235526-bb8efeda64d1435091fe29204e8011a3-0-fe17e178cbb6285fefcf870f31c85b33">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://z-cdn-media.chatglm.cn/files/a1de3888-585c-4351-b383-9e9eb3867197.png?auth_key=1875235526-14bdfc3523474844a9ebc8b68ada0f59-0-b787c12e1275b7d78847b8629af22d3d">
+    <link rel="apple-touch-icon" href="https://z-cdn-media.chatglm.cn/files/a1de3888-585c-4351-b383-9e9eb3867197.png?auth_key=1875235526-14bdfc3523474844a9ebc8b68ada0f59-0-b787c12e1275b7d78847b8629af22d3d">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>tailwind.config={theme:{extend:{colors:{gold:'#FFD700',dark:'#0a0a0a',panel:'#151515'},fontFamily:{sans:['Inter'],heading:['Oswald']}}}}</script>
+    <style>
+        body{background:#000;color:#fff;-webkit-tap-highlight-color:transparent}
+        .glass{background:rgba(255,255,255,0.03);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.05)}
+        .glass-panel{background:rgba(30,30,30,0.6);backdrop-filter:blur(12px);border:1px solid rgba(255,215,0,0.15)}
+        .text-gradient{background:linear-gradient(to right,#FFD700,#FDB931);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+        @keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(255,215,0,0.4)}70%{box-shadow:0 0 0 15px rgba(255,215,0,0)}100%{box-shadow:0 0 0 0 rgba(255,215,0,0)}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        .fade-in{animation:fadeIn 0.5s ease-out forwards}
+        .shimmer-text{background:linear-gradient(90deg,#FFD700 0%,#FFF 50%,#FFD700 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite}
+        .tab-btn.active{color:#000;background:#FFD700;font-weight:bold}
+        .tab-btn{color:#888;border:1px solid #333;transition:all 0.3s}
+        .day-check{transition:all 0.3s;cursor:pointer}
+        .day-check:hover{transform:scale(1.05);border-color:#FFD700}
+        .day-check.completed{background:linear-gradient(135deg,#FFD700 0%,#C5A000 100%);color:black;border:none;box-shadow:0 0 15px rgba(255,215,0,0.4)}
+        .objective-card{transition:all 0.3s ease;cursor:pointer}
+        .objective-card:hover{transform:translateY(-2px);border-color:#FFD700}
+        .objective-card.selected{border-color:#FFD700;background:rgba(255,215,0,0.1)}
+        #lock-screen{position:fixed;inset:0;z-index:100;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center}
+        #welcome-screen{position:fixed;inset:0;z-index:95;background:linear-gradient(180deg,#000 0%,#0a0a0a 100%);display:none;flex-direction:column;overflow-y:auto}
+        #level-expired{position:fixed;inset:0;z-index:9950;background:#050505;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+        #device-blocked{position:fixed;inset:0;z-index:9999;background:#0a0000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+        #pwa-install-modal{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.95);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+        .spinner{width:40px;height:40px;border:3px solid rgba(255,215,0,0.3);border-radius:50%;border-top-color:#FFD700;animation:spin 1s ease-in-out infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .progress-day-badge{animation:pulse-ring 2s infinite}
+        .step-card{transition:all 0.3s ease}
+        .step-card:hover{transform:scale(1.02)}
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:#0f0f0f}
+        ::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+    </style>
+</head>
+<body class="overflow-x-hidden pb-24">
+
+    <!-- MODAL DE INSTALACIÓN PWA -->
+    <div id="pwa-install-modal">
+        <div class="max-w-sm w-full px-4">
+            <div class="mb-6">
+                <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden shadow-2xl" style="animation:float 3s ease-in-out infinite">
+                    <img src="https://z-cdn-media.chatglm.cn/files/a1de3888-585c-4351-b383-9e9eb3867197.png?auth_key=1875235526-14bdfc3523474844a9ebc8b68ada0f59-0-b787c12e1275b7d78847b8629af22d3d" alt="INFIT" class="w-full h-full object-cover">
+                </div>
+            </div>
+            
+            <h2 class="text-2xl font-heading font-bold text-white mb-2">Instala Tu Plan como App</h2>
+            <p class="text-gray-400 text-sm mb-6">Acceso directo desde tu pantalla de inicio.</p>
+
+            <div id="ios-instructions" class="hidden">
+                <div class="glass-panel rounded-xl p-5 mb-4 text-left">
+                    <h3 class="text-gold font-bold text-sm mb-4 flex items-center gap-2">
+                        <i class="fab fa-apple"></i> Instrucciones iPhone
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                                <span class="text-blue-400 font-bold text-sm">1</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-bold">Toca el boton Compartir</p>
+                                <p class="text-gray-500 text-xs">Esta abajo a la derecha</p>
+                            </div>
+                        </div>
+                        <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                                <span class="text-green-400 font-bold text-sm">2</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-bold">Busca "Agregar a pantalla de inicio"</p>
+                                <p class="text-gray-500 text-xs">Icono con signo +</p>
+                            </div>
+                        </div>
+                        <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                                <span class="text-gold font-bold text-sm">3</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-bold">Toca "Agregar"</p>
+                                <p class="text-gray-500 text-xs">Listo!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="android-instructions" class="hidden">
+                <div class="glass-panel rounded-xl p-5 mb-4 text-left">
+                    <h3 class="text-gold font-bold text-sm mb-4 flex items-center gap-2">
+                        <i class="fab fa-android"></i> Instrucciones Android
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                                <span class="text-green-400 font-bold text-sm">1</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-bold">Toca los 3 puntos arriba a la derecha</p>
+                                <p class="text-gray-500 text-xs">Menu del navegador</p>
+                            </div>
+                        </div>
+                        <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                                <span class="text-blue-400 font-bold text-sm">2</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-bold">Selecciona "Agregar a pantalla de inicio"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="desktop-instructions" class="hidden">
+                <div class="glass-panel rounded-xl p-5 mb-4 text-left">
+                    <h3 class="text-gold font-bold text-sm mb-4 flex items-center gap-2">
+                        <i class="fas fa-desktop"></i> Instrucciones Computadora
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                                <span class="text-blue-400 font-bold text-sm">1</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-bold">Busca el icono de instalacion en la barra de direcciones</p>
+                            </div>
+                        </div>
+                        <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
+                            <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                                <span class="text-green-400 font-bold text-sm">2</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm font-bold">O usa: Menu - Mas herramientas - Instalar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="install-btn-native" class="hidden w-full py-4 bg-gradient-to-r from-gold to-yellow-500 rounded-xl text-black font-heading font-bold uppercase tracking-widest text-sm mb-4">
+                <i class="fas fa-download mr-2"></i> INSTALAR AHORA
+            </button>
+
+            <button onclick="closePWAModal()" class="w-full py-3 bg-gray-800 rounded-xl text-white font-bold text-sm border border-gray-700 hover:bg-gray-700 transition">
+                Continuar en el navegador
+            </button>
+            <p class="text-[10px] text-gray-600 mt-4">Podras instalarlo mas tarde desde el menu del navegador</p>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE BLOQUEO POR DISPOSITIVO -->
+    <div id="device-blocked">
+        <div class="max-w-sm w-full px-4">
+            <div class="w-20 h-20 rounded-full bg-red-500/20 border-2 border-red-500/50 flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-ban text-red-500 text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-heading font-bold text-white uppercase italic text-center mb-4">Plan No Compartible</h2>
+            <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
+                <p class="text-sm text-gray-300 text-center leading-relaxed">
+                    Este plan esta vinculado a <strong class="text-white">un solo dispositivo</strong> por seguridad y no puede compartirse.
+                </p>
+            </div>
+            <div class="bg-gray-900/60 border border-gray-800 rounded-xl p-4 mb-4">
+                <p class="text-xs text-gray-400 text-center">
+                    <i class="fas fa-shield-alt text-red-400 mr-2"></i>
+                    Si esto es un error, contacta a tu coach para reactivar tu acceso.
+                </p>
+            </div>
+            <div class="text-center mt-6">
+                <p class="text-[10px] text-gray-600">INFIT VIP - Seguridad de Plan Personal</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE BLOQUEO -->
+    <div id="lock-screen">
+        <div class="text-center p-8 max-w-sm w-full relative z-10">
+            <div class="mb-4 inline-block p-4 rounded-full bg-yellow-500/10 border border-yellow-500/20">
+                <img src="https://z-cdn-media.chatglm.cn/files/a1de3888-585c-4351-b383-9e9eb3867197.png?auth_key=1875235526-14bdfc3523474844a9ebc8b68ada0f59-0-b787c12e1275b7d78847b8629af22d3d" alt="INFIT" class="w-16 h-16 rounded-full">
+            </div>
+            <h1 class="text-3xl font-heading font-bold italic mb-1 tracking-widest text-white">TU MEJOR <span class="text-gold">VERSION</span></h1>
+            <p class="text-gray-400 text-xs uppercase tracking-widest mb-4">Acceso Nivel 1</p>
+            <div class="px-2 mb-6"><p class="text-[13px] italic text-gray-300 font-serif leading-relaxed">"La preparación de hoy es el éxito de mañana."</p></div>
+            <div class="bg-gray-900/60 border border-gray-800 p-4 rounded-xl mb-4">
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">TIPO DE PLAN</p>
+                <p class="text-sm font-bold text-yellow-400 italic">Activo / Deportista</p>
+            </div>
+            <div class="bg-gray-900/60 border border-gray-800 p-4 rounded-xl mb-8">
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">OBJETIVO VIP</p>
+                <p class="text-sm font-bold text-gold italic">Cocinar el domingo para la semana</p>
+            </div>
+            <div id="login-form">
+                <p class="text-[10px] text-gray-500 mb-2">INGRESA TU TELEFONO</p>
+                <div class="relative mb-4">
+                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"><i class="fas fa-phone"></i></span>
+                    <input type="text" id="pass-input" placeholder="Ej. 7711234567" class="w-full bg-panel border border-gray-800 rounded-lg py-4 pl-12 pr-4 text-white font-bold focus:border-gold focus:outline-none placeholder:text-gray-600 transition-colors">
+                </div>
+                <button onclick="checkAccess()" id="btn-entrar" class="w-full bg-gold text-black font-bold py-4 rounded-lg uppercase tracking-wider font-heading hover:bg-yellow-400 transition">Desbloquear Mi Plan</button>
+                <p id="error-msg" class="text-red-500 text-xs mt-4 hidden bg-red-500/10 p-2 rounded"><i class="fas fa-exclamation-triangle"></i> Numero incorrecto.</p>
+            </div>
+            <div id="login-loader" class="hidden flex-col items-center justify-center py-8">
+                <div class="spinner mb-4"></div>
+                <p class="text-gray-400 text-sm">Verificando dispositivo...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE BIENVENIDA -->
+    <div id="welcome-screen">
+        <div class="min-h-screen py-8 px-5 relative">
+            <div class="max-w-sm mx-auto relative z-10">
+                <div class="text-center mb-6 fade-in">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gold to-yellow-600 flex items-center justify-center shadow-2xl mx-auto mb-4">
+                        <i class="fas fa-crown text-black text-3xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-heading font-bold italic mb-2">Bienvenido, <span class="shimmer-text">JERRY</span>!</h1>
+                    <div class="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-2 rounded-full">
+                        <i class="fas fa-layer-group text-gold text-sm"></i>
+                        <span class="text-gold font-bold text-sm uppercase">Nivel 1 Activado</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed mt-4">¡Estás comenzando tu transformación!</p>
+                </div>
+                <div class="glass-panel rounded-2xl p-5 mb-6 fade-in">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fas fa-bullseye text-gold"></i>
+                        <h2 class="font-heading font-bold text-white uppercase tracking-wide text-sm">Elige tu Micro-Objetivo</h2>
+                    </div>
+                    <div class="space-y-3" id="objectives-container">
+                        <div class="objective-card glass rounded-xl p-4 border border-gray-700" onclick="selectObjective(this,'agua')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center"><i class="fas fa-tint text-blue-400"></i></div>
+                                <div class="flex-1"><p class="text-white font-bold text-sm">Hidratacion Constante</p></div>
+                                <i class="fas fa-check-circle text-gold text-lg opacity-0"></i>
+                            </div>
+                        </div>
+                        <div class="objective-card glass rounded-xl p-4 border border-gray-700" onclick="selectObjective(this,'mealprep')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center"><i class="fas fa-utensils text-green-400"></i></div>
+                                <div class="flex-1"><p class="text-white font-bold text-sm">Meal Prep Dominical</p></div>
+                                <i class="fas fa-check-circle text-gold text-lg opacity-0"></i>
+                            </div>
+                        </div>
+                        <div class="objective-card glass rounded-xl p-4 border border-gray-700" onclick="selectObjective(this,'dormir')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><i class="fas fa-moon text-purple-400"></i></div>
+                                <div class="flex-1"><p class="text-white font-bold text-sm">Descanso Reparador</p></div>
+                                <i class="fas fa-check-circle text-gold text-lg opacity-0"></i>
+                            </div>
+                        </div>
+                        <div class="objective-card glass rounded-xl p-4 border border-gray-700" onclick="selectObjective(this,'pasos')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center"><i class="fas fa-walking text-orange-400"></i></div>
+                                <div class="flex-1"><p class="text-white font-bold text-sm">Movimiento Diario</p></div>
+                                <i class="fas fa-check-circle text-gold text-lg opacity-0"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="continuarAlPlan()" id="btn-continuar" class="w-full py-4 bg-gradient-to-r from-gold to-yellow-500 rounded-xl text-black font-heading font-bold uppercase tracking-widest text-sm shadow-2xl transition-all fade-in disabled:opacity-50" disabled>
+                    <i class="fas fa-arrow-right mr-2"></i> COMENZAR MI TRANSFORMACION
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE EXPIRACION -->
+    <div id="level-expired">
+        <div class="max-w-sm w-full relative z-10 px-4">
+            <div class="w-24 h-24 rounded-full bg-gradient-to-br from-gold to-yellow-600 flex items-center justify-center shadow-2xl mx-auto mb-6 relative">
+                <i class="fas fa-crown text-black text-4xl"></i>
+                <div class="absolute -top-2 -right-2 w-10 h-10 rounded-full bg-green-500 flex items-center justify-center border-2 border-black">
+                    <i class="fas fa-check text-white text-lg"></i>
+                </div>
+            </div>
+            <h2 class="text-3xl font-heading font-bold text-white uppercase italic text-center mb-2">Nivel 1 Completado</h2>
+            <p class="text-sm text-gray-400 text-center mb-6">Has terminado tu ciclo de 30 dias. Es hora de tu evaluacion.</p>
+            
+            <div class="glass-panel rounded-xl p-4 mb-6">
+                <h3 class="text-gold font-bold text-xs uppercase tracking-widest mb-3 text-center">Tu Logro Esta Etapa</h3>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="bg-black/40 rounded-lg p-3"><p class="text-xl font-bold text-white">1</p><p class="text-[9px] text-gray-500 uppercase">Nivel</p></div>
+                    <div class="bg-black/40 rounded-lg p-3"><p class="text-xl font-bold text-gold">30</p><p class="text-[9px] text-gray-500 uppercase">Dias</p></div>
+                    <div class="bg-black/40 rounded-lg p-3"><p class="text-xl font-bold text-green-400">OK</p><p class="text-[9px] text-gray-500 uppercase">Meta</p></div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-gold/10 via-yellow-500/10 to-gold/10 border border-gold/30 rounded-xl p-5 mb-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-gold/10 rounded-full blur-2xl"></div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">Siguiente Meta</p>
+                        <p class="text-lg font-heading font-bold text-gold italic">Nivel 2</p>
+                        <p class="text-xs text-gray-400 mt-1">Tu coach tiene listo tu nuevo plan</p>
+                    </div>
+                    <div class="w-16 h-16 rounded-full bg-gold/20 border-2 border-gold/50 flex items-center justify-center">
+                        <span class="text-2xl font-bold text-gold">2</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-6">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-clipboard-check text-blue-400"></i>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="font-bold text-blue-400 text-sm">Evaluacion Necesaria</h4>
+                        <p class="text-xs text-gray-300 mt-1">Agenda tu evaluacion con tu coach para medir tu progreso y recibir tu plan del siguiente nivel.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="contactForUpgrade()" class="w-full py-4 bg-gradient-to-r from-gold to-yellow-500 rounded-xl text-black font-heading font-bold uppercase tracking-widest text-sm animate-pulse">
+                <i class="fas fa-rocket mr-2"></i> Pasar al Nivel 2
+            </button>
+            <p class="text-[10px] text-gray-500 text-center mt-4"><i class="fas fa-comment-dots mr-1"></i>Contacta a tu coach para tu evaluacion</p>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div id="app-content" class="hidden opacity-0 transition-opacity duration-1000">
+        <header class="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-white/5">
+            <div class="px-5 py-4 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-heading font-bold italic">TU MEJOR <span class="text-gradient">VERSION</span></h2>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Hola, JERRY</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="h-8 w-8 rounded-full bg-panel border border-gold/30 flex items-center justify-center">
+                        <span class="text-xs font-bold text-gold">J</span>
+                    </div>
+                    <div class="px-2 py-0.5 bg-gold text-black text-[8px] font-bold uppercase rounded">Nivel 1</div>
+                </div>
+            </div>
+            <div class="w-full h-1 bg-gray-900">
+                <div id="cycle-progress-bar" class="h-full bg-gold transition-all duration-1000" style="width:0%"></div>
+            </div>
+        </header>
+
+        <!-- BANNER DE AVANCE -->
+        <div class="px-5 pt-4">
+            <div class="bg-gradient-to-r from-gold/20 via-yellow-500/10 to-gold/20 border-2 border-gold/40 rounded-xl p-4 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-full bg-gold/5"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 rounded-full bg-gold/30 flex items-center justify-center progress-day-badge">
+                                <i class="fas fa-calendar-day text-gold"></i>
+                            </div>
+                            <div>
+                                <p class="text-[9px] text-gray-400 uppercase tracking-widest">Tu progreso hoy</p>
+                                <p id="day-display" class="text-lg font-heading font-bold text-gold">Dia 1 de 30</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-gray-400">Meta</p>
+                            <p class="text-sm font-bold text-white">Cocinar el domingo para la semana</p>
+                        </div>
+                    </div>
+                    <div class="w-full bg-black/50 rounded-full h-3 overflow-hidden">
+                        <div id="main-progress-bar" class="h-full bg-gradient-to-r from-gold to-yellow-400 transition-all duration-700 rounded-full" style="width:0%"></div>
+                    </div>
+                    <div class="flex justify-between mt-2">
+                        <span class="text-[10px] text-gray-500">Inicio</span>
+                        <span id="progress-percent" class="text-[10px] text-gold font-bold">0%</span>
+                        <span class="text-[10px] text-gray-500">Dia 30</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MACROS -->
+        <section class="p-5 pt-4">
+            <div class="glass rounded-2xl p-5 border-l-4 border-gold">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase">Enfoque Actual</p>
+                        <p class="text-sm font-heading font-bold text-white">Cocinar el domingo para la semana</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] text-gold uppercase font-bold"><i class="far fa-calendar-alt mr-1"></i>Finaliza</p>
+                        <p id="end-date-text" class="text-[10px] text-white">...</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-2 text-center">
+                    <div class="text-left"><p class="text-xl font-bold text-gold">2282</p><p class="text-[9px] text-gray-400">KCAL</p></div>
+                    <div class="bg-black/40 rounded p-1"><p class="text-white font-bold text-xs">219g</p><p class="text-[8px] text-gray-500">PRO</p></div>
+                    <div class="bg-black/40 rounded p-1"><p class="text-white font-bold text-xs">183g</p><p class="text-[8px] text-gray-500">CARB</p></div>
+                    <div class="bg-black/40 rounded p-1"><p class="text-white font-bold text-xs">75g</p><p class="text-[8px] text-gray-500">FAT</p></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/10 mt-4">
+                    <div class="bg-black/50 border border-gold/20 rounded-lg p-2 text-center">
+                        <p class="text-[9px] text-gray-500 uppercase">Peso</p>
+                        <p class="text-sm font-bold text-white">82.9 kg</p>
+                    </div>
+                    <div class="bg-black/50 border border-gold/20 rounded-lg p-2 text-center">
+                        <p class="text-[9px] text-gray-500 uppercase">Estatura</p>
+                        <p class="text-sm font-bold text-white">1.69 m</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GUIA DE PORCIONES -->
+        <section class="px-5 mb-4">
+            <div class="glass-panel rounded-2xl overflow-hidden">
+                <button onclick="togglePortionsGuide()" class="w-full p-4 flex items-center justify-between bg-gradient-to-r from-gold/10 to-transparent border-b border-gray-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center"><i class="fas fa-eye text-gold"></i></div>
+                        <div class="text-left">
+                            <h3 class="font-heading font-bold text-white text-sm">GUIA VISUAL DE PORCIONES</h3>
+                            <p class="text-[10px] text-gray-400">Mide sin bascula</p>
+                        </div>
+                    </div>
+                    <i id="portions-chevron" class="fas fa-chevron-down text-gold transition-transform duration-300"></i>
+                </button>
+                <div id="portions-content" class="hidden">
+                    <div class="p-4 border-b border-gray-800">
+                        <h4 class="text-red-400 font-bold text-xs uppercase mb-3"><i class="fas fa-drumstick-bite mr-2"></i>Proteinas</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-black/40 rounded-xl p-3 border border-red-500/20"><span class="text-2xl">✋</span><p class="text-white font-bold text-xs mt-2">120-150g Pollo</p><p class="text-[9px] text-gray-500">Tamano de tu palma</p></div>
+                            <div class="bg-black/40 rounded-xl p-3 border border-red-500/20"><span class="text-2xl">🥚</span><p class="text-white font-bold text-xs mt-2">1 Huevo = 6g PRO</p><p class="text-[9px] text-gray-500">Tamano normal</p></div>
+                        </div>
+                    </div>
+                    <div class="p-4 border-b border-gray-800">
+                        <h4 class="text-yellow-400 font-bold text-xs uppercase mb-3"><i class="fas fa-bread-slice mr-2"></i>Carbohidratos</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-black/40 rounded-xl p-3 border border-yellow-500/20"><span class="text-2xl">👊</span><p class="text-white font-bold text-xs mt-2">1 taza Arroz</p><p class="text-[9px] text-gray-500">Tamano de un puno</p></div>
+                            <div class="bg-black/40 rounded-xl p-3 border border-yellow-500/20"><span class="text-2xl">🌮</span><p class="text-white font-bold text-xs mt-2">2 Tortillas</p><p class="text-[9px] text-gray-500">Tamano de tu mano</p></div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-gold/5">
+                        <div class="grid grid-cols-4 gap-2 text-center">
+                            <div class="bg-black/40 rounded-lg p-2"><span class="text-xl">👊</span><p class="text-[9px] text-gray-300 mt-1">1 Puno = 1 taza</p></div>
+                            <div class="bg-black/40 rounded-lg p-2"><span class="text-xl">✋</span><p class="text-[9px] text-gray-300 mt-1">1 Palma = 120g</p></div>
+                            <div class="bg-black/40 rounded-lg p-2"><span class="text-xl">👍</span><p class="text-[9px] text-gray-300 mt-1">1 Pulgar = 1 cda</p></div>
+                            <div class="bg-black/40 rounded-lg p-2"><span class="text-xl">🤏</span><p class="text-[9px] text-gray-300 mt-1">1 Punado = 30g</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TABS -->
+        <div class="px-5 mb-6 sticky top-[70px] z-30">
+            <div class="flex bg-panel p-1 rounded-xl border border-gray-800">
+                <button onclick="switchTab('A')" id="btn-A" class="tab-btn active flex-1 py-3 px-2 rounded-lg text-xs font-heading uppercase">Var 1</button>
+                <button onclick="switchTab('B')" id="btn-B" class="tab-btn flex-1 py-3 px-2 rounded-lg text-xs font-heading uppercase ml-1">Var 2</button>
+                <button onclick="switchTab('Reto')" id="btn-Reto" class="tab-btn flex-1 py-3 px-2 rounded-lg text-xs font-heading uppercase ml-1 text-red-400"><i class="fas fa-fire mr-1"></i>RETO</button>
+            </div>
+        </div>
+
+        <!-- VARIACION 1 -->
+        <div id="content-A" class="px-5 space-y-4 fade-in">
+            <div class="bg-gold/10 border border-gold/30 rounded-xl p-3 mb-4">
+                <span class="text-xs font-bold text-white">Variacion 1</span>
+                <span class="text-[10px] text-gold float-right">Lun, Mie, Vie, Dom</span>
+            </div>
+            <div class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 mb-2">
+                <h4 class="font-bold text-orange-400 text-sm"><i class="fas fa-utensils mr-2"></i>Domingo: Comida Trampa</h4>
+                <p class="text-xs text-gray-300 mt-1">Disfruta UNA comida libre.</p>
+            </div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">3 huevos revueltos con 2 tortillas y 1/2 taza de frijoles.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 manzana con 10 almendras.</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">150g de pechuga de pollo con 1 taza de arroz y ensalada.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 taza de yogurt griego sin azúcar.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">120g de carne magra con verduras al vapor.</p></div>
+        </div>
+
+        <!-- VARIACION 2 -->
+        <div id="content-B" class="px-5 space-y-4 hidden fade-in">
+            <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 mb-4">
+                <span class="text-xs font-bold text-white">Variacion 2</span>
+                <span class="text-[10px] text-blue-400 float-right">Mar, Jue, Sab</span>
+            </div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Omelette de 3 claras con espinacas y 2 tortillas.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 plátano con crema de cacahuate.</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">150g de pescado con 1 taza de arroz integral.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">1 puño de nueces.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">150g de pollo a la plancha con ensalada verde.</p></div>
+        </div>
+
+        <!-- RETO -->
+        <div id="content-Reto" class="px-5 space-y-5 hidden fade-in pb-8">
+            <div class="text-center py-4">
+                <div class="w-16 h-16 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-fire-flame-curved text-red-500 text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-heading font-bold text-white uppercase italic mb-2">RETO DE ELIMINACION</h2>
+                <p class="text-xs text-gray-400">30 dias de transformacion</p>
+            </div>
+
+            <div class="glass-panel rounded-xl overflow-hidden">
+                <div class="bg-gradient-to-r from-gold/20 to-transparent p-4 border-b border-gray-800">
+                    <h3 class="font-heading font-bold text-gold text-sm"><i class="fas fa-route mr-2"></i>TU CAMINO DE 4 SEMANAS</h3>
+                </div>
+                <div class="p-4 border-b border-gray-800">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-red-500/20 border-2 border-red-500/50 flex items-center justify-center flex-shrink-0"><span class="text-red-400 font-bold text-sm">1</span></div>
+                        <div><h4 class="font-bold text-white text-sm">Semana 1: Reducir Porciones</h4><p class="text-xs text-gray-400 mt-1">Reduce a la mitad: azucar, alcohol, pan, frituras.</p></div>
+                    </div>
+                </div>
+                <div class="p-4 border-b border-gray-800">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-orange-500/20 border-2 border-orange-500/50 flex items-center justify-center flex-shrink-0"><span class="text-orange-400 font-bold text-sm">2</span></div>
+                        <div><h4 class="font-bold text-white text-sm">Semana 2: Sustituir</h4><p class="text-xs text-gray-400 mt-1">Refresco - Agua con limon. Pan dulce - Fruta.</p></div>
+                    </div>
+                </div>
+                <div class="p-4 border-b border-gray-800">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-yellow-500/20 border-2 border-yellow-500/50 flex items-center justify-center flex-shrink-0"><span class="text-yellow-400 font-bold text-sm">3</span></div>
+                        <div><h4 class="font-bold text-white text-sm">Semana 3: Eliminar</h4><p class="text-xs text-gray-400 mt-1">Lun-Sab: Sin azucar, alcohol, chatarra. Dom libre.</p></div>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-green-500/20 border-2 border-green-500/50 flex items-center justify-center flex-shrink-0"><span class="text-green-400 font-bold text-sm">4</span></div>
+                        <div><h4 class="font-bold text-white text-sm">Semana 4: Consolidacion</h4><p class="text-xs text-gray-400 mt-1">Estilo de vida logrado! Dom siguen libres.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gold font-heading font-bold text-sm"><i class="fas fa-calendar-check mr-2"></i>PROGRESO DIARIO</h3>
+                    <span id="progress-text" class="text-white font-bold text-sm bg-gold/20 px-3 py-1 rounded-full">0%</span>
+                </div>
+                <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden mb-4">
+                    <div id="progress-bar" class="bg-gradient-to-r from-gold to-yellow-500 h-full transition-all duration-700" style="width:0%"></div>
+                </div>
+                <div id="days-grid" class="grid grid-cols-6 gap-2"></div>
+            </div>
+        </div>
+
+        <!-- LISTA DE SUPER -->
+        <section class="p-5 mt-4" id="shopping-list-section">
+            <div class="glass rounded-2xl p-6">
+                <h3 class="font-heading font-bold text-gold mb-4"><i class="fas fa-shopping-basket mr-2"></i>LISTA DE SUPER</h3>
+                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-drumstick-bite text-red-400 mr-2"></i>Proteinas</p><p class="text-xs text-gray-300">Pechuga de pollo (fresca), Bistec de res (sirloin o similar, magro), Carne molida de res (90/10), Puntas de res (magras), Atún en agua (latas), Huevos, Claras de huevo (líquidas o frescas), Pechuga de pavo ahumada (bajo sodio), Requesón (o Queso Cottage light), Yogurt griego natural (sin azúcar), Frijoles negros (secos o enlatados sin sodio), Lentejas (secas).</p></div>
+                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-bread-slice text-yellow-400 mr-2"></i>Carbohidratos</p><p class="text-xs text-gray-300">Tortillas de maíz, Arroz blanco, Galletas integrales, Tostadas de maíz horneadas, Papa.</p></div>
+                <div><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-leaf text-green-400 mr-2"></i>Verduras y Frutas</p><p class="text-xs text-gray-300">Nopales (frescos o envasados sin sodio), Aguacate, Jitomate, Cebolla, Pimiento (verde/rojo), Pepino, Jícama, Calabacitas, Zanahoria, Pera, Durazno, Salsa ranchera (casera o comercial baja en sodio/grasas), Chiles (serrano/jalapeño), Almendras (fruto seco, pero categorizado aquí para simplicidad de compra), Crema ligera (o yogur natural para sustituir), Aceite de cocina (oliva/aguacate, para saltear).</p></div>
+            </div>
+        </section>
+        <div class="h-10"></div>
+    </div>
+
+    <script>
+        const CLIENT_PHONE="5535766379";
+        const MASTER_KEY="INFIT2026PRO";
+        const userName="JERRY";
+        const userLevel=1;
+        const startDate=new Date("2026-04-04T00:00:00");
+        const endDate=new Date(startDate);
+        endDate.setDate(startDate.getDate()+29);
+        const today=new Date();
+        const diffTime=today-startDate;
+        const dayOfCycle=diffTime<0?1:Math.ceil(diffTime/(1000*60*60*24));
+        const isExpired=dayOfCycle>30;
+
+        let selectedObjective=null;
+        let progressData=Array(30).fill(false);
+        const userId=userName.toLowerCase().replace(/[^a-z0-9]/g,'');
+
+        const firebaseConfig={
+            apiKey:"AIzaSyAv1BfTCiQWgPXvtpMW14RdhbLyY4yGtiY",
+            authDomain:"infit-reto.firebaseapp.com",
+            databaseURL:"https://infit-reto-default-rtdb.firebaseio.com",
+            projectId:"infit-reto",
+            storageBucket:"infit-reto.firebasestorage.app",
+            messagingSenderId:"881118508637",
+            appId:"1:881118508637:web:26d5487e848aa4cd2d7fb4"
+        };
+
+        let db;
+        let deferredPrompt=null;
+
+        function generateDeviceId(){
+            const canvas=document.createElement('canvas');
+            const gl=canvas.getContext('webgl');
+            const debugInfo=gl?gl.getExtension('WEBGL_debug_renderer_info'):null;
+            const components=[
+                navigator.userAgent,navigator.language,navigator.platform,
+                screen.width+'x'+screen.height,screen.colorDepth,
+                new Date().getTimezoneOffset(),
+                debugInfo?gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL):'',
+                debugInfo?gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL):''
+            ];
+            const fingerprint=components.join('|');
+            let hash=0;
+            for(let i=0;i<fingerprint.length;i++){
+                const char=fingerprint.charCodeAt(i);
+                hash=((hash<<5)-hash)+char;
+                hash=hash&hash;
+            }
+            return'DEV-'+Math.abs(hash).toString(16).toUpperCase();
+        }
+
+        function getStoredDeviceId(){
+            let deviceId=localStorage.getItem('infit_device_id');
+            if(!deviceId){
+                deviceId=generateDeviceId();
+                localStorage.setItem('infit_device_id',deviceId);
+            }
+            return deviceId;
+        }
+
+        function detectDevice(){
+            const ua=navigator.userAgent;
+            if(/iPad|iPhone|iPod/.test(ua))return'ios';
+            if(/Android/.test(ua))return'android';
+            return'desktop';
+        }
+
+        window.onload=()=>{
+            const manifestBlob=new Blob([JSON.stringify({
+                name:"INFIT VIP - "+userName,short_name:"INFIT VIP",start_url:".",display:"standalone",
+                background_color:"#000000",theme_color:"#000000",
+                icons:[{src:"https://z-cdn-media.chatglm.cn/files/a1de3888-585c-4351-b383-9e9eb3867197.png?auth_key=1875235526-14bdfc3523474844a9ebc8b68ada0f59-0-b787c12e1275b7d78847b8629af22d3d",sizes:"192x192",type:"image/png",purpose:"any maskable"},{src:"https://z-cdn-media.chatglm.cn/files/af0a5deb-18dd-448b-8020-2b0299763490.png?auth_key=1875235526-bb8efeda64d1435091fe29204e8011a3-0-fe17e178cbb6285fefcf870f31c85b33",sizes:"512x512",type:"image/png",purpose:"any maskable"}]
+            })],{type:'application/json'});
+            const manifestLink=document.createElement('link');
+            manifestLink.rel='manifest';
+            manifestLink.href=URL.createObjectURL(manifestBlob);
+            document.head.appendChild(manifestLink);
+
+            const device=detectDevice();
+            if(device==='ios')document.getElementById('ios-instructions').classList.remove('hidden');
+            else if(device==='android')document.getElementById('android-instructions').classList.remove('hidden');
+            else document.getElementById('desktop-instructions').classList.remove('hidden');
+
+            window.addEventListener('beforeinstallprompt',(e)=>{
+                e.preventDefault();
+                deferredPrompt=e;
+                document.getElementById('install-btn-native').classList.remove('hidden');
+            });
+
+            if(isExpired){
+                document.getElementById('lock-screen').style.display='none';
+                document.getElementById('level-expired').style.display='flex';
+                return;
+            }
+
+            try{
+                if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+                db=firebase.database();
+            }catch(e){console.error("Firebase:",e)}
+
+            const authToken=localStorage.getItem('infit_token_'+userId);
+            const welcomeComplete=localStorage.getItem('infit_welcome_'+userId);
+            
+            if(authToken==='authorized' && welcomeComplete==='done'){
+                verifyDeviceBeforeLaunch();
+            }else if(authToken==='authorized'){
+                verifyDeviceBeforeWelcome();
+            }
+        };
+
+        document.getElementById('install-btn-native').addEventListener('click',async()=>{
+            if(deferredPrompt){
+                deferredPrompt.prompt();
+                const{outcome}=await deferredPrompt.userChoice;
+                if(outcome==='accepted')closePWAModal();
+                deferredPrompt=null;
+            }
+        });
+
+        async function verifyDeviceBeforeLaunch(){
+            const currentDeviceId=getStoredDeviceId();
+            if(!db){launchApp();return;}
+            const deviceRef=db.ref('users/'+userId+'/deviceId');
+            deviceRef.once('value').then((snapshot)=>{
+                const savedDevice=snapshot.val();
+                if(!savedDevice){deviceRef.set(currentDeviceId);launchApp();}
+                else if(savedDevice===currentDeviceId){launchApp();}
+                else{document.getElementById('lock-screen').style.display='none';document.getElementById('device-blocked').style.display='flex';}
+            }).catch(()=>launchApp());
+        }
+
+        async function verifyDeviceBeforeWelcome(){
+            const currentDeviceId=getStoredDeviceId();
+            if(!db){showWelcomeScreen();return;}
+            const deviceRef=db.ref('users/'+userId+'/deviceId');
+            deviceRef.once('value').then((snapshot)=>{
+                const savedDevice=snapshot.val();
+                if(!savedDevice){deviceRef.set(currentDeviceId);showWelcomeScreen();}
+                else if(savedDevice===currentDeviceId){showWelcomeScreen();}
+                else{document.getElementById('lock-screen').style.display='none';document.getElementById('device-blocked').style.display='flex';}
+            }).catch(()=>showWelcomeScreen());
+        }
+
+        function checkAccess(){
+            const inputRaw=document.getElementById('pass-input').value.trim();
+            const inputPhone=inputRaw.replace(/\D/g,'');
+            const inputMaster=inputRaw.toUpperCase();
+
+            document.getElementById('error-msg').classList.add('hidden');
+            
+            if(inputMaster===MASTER_KEY){
+                localStorage.setItem('infit_token_'+userId,'authorized');
+                showWelcomeScreen();
+                return;
+            }
+
+            if(inputPhone===CLIENT_PHONE){
+                document.getElementById('login-form').style.display='none';
+                document.getElementById('login-loader').style.display='flex';
+                
+                const currentDeviceId=getStoredDeviceId();
+                
+                if(!db){
+                    localStorage.setItem('infit_token_'+userId,'authorized');
+                    showWelcomeScreen();
+                    return;
+                }
+
+                const deviceRef=db.ref('users/'+userId+'/deviceId');
+                deviceRef.once('value').then((snapshot)=>{
+                    const savedDevice=snapshot.val();
+                    
+                    if(!savedDevice){
+                        deviceRef.set(currentDeviceId).then(()=>{
+                            localStorage.setItem('infit_token_'+userId,'authorized');
+                            showWelcomeScreen();
+                        });
+                    }else if(savedDevice===currentDeviceId){
+                        localStorage.setItem('infit_token_'+userId,'authorized');
+                        showWelcomeScreen();
+                    }else{
+                        document.getElementById('login-loader').style.display='none';
+                        document.getElementById('login-form').style.display='block';
+                        document.getElementById('lock-screen').style.display='none';
+                        document.getElementById('device-blocked').style.display='flex';
+                    }
+                }).catch(()=>{
+                    localStorage.setItem('infit_token_'+userId,'authorized');
+                    showWelcomeScreen();
+                });
+            }else{
+                document.getElementById('error-msg').classList.remove('hidden');
+            }
+        }
+
+        function showWelcomeScreen(){
+            document.getElementById('lock-screen').style.opacity='0';
+            setTimeout(()=>{
+                document.getElementById('lock-screen').style.display='none';
+                document.getElementById('welcome-screen').style.display='flex';
+            },500);
+        }
+
+        function selectObjective(el,key){
+            document.querySelectorAll('.objective-card').forEach(c=>{
+                c.classList.remove('selected');
+                c.querySelector('.fa-check-circle').style.opacity='0';
+            });
+            el.classList.add('selected');
+            el.querySelector('.fa-check-circle').style.opacity='1';
+            selectedObjective=key;
+            document.getElementById('btn-continuar').disabled=false;
+        }
+
+        function continuarAlPlan(){
+            if(!selectedObjective)return;
+            localStorage.setItem('infit_objective_'+userId,selectedObjective);
+            localStorage.setItem('infit_welcome_'+userId,'done');
+            document.getElementById('welcome-screen').style.opacity='0';
+            confetti({particleCount:100,spread:70,origin:{y:0.6},colors:['#FFD700','#FFF']});
+            setTimeout(()=>{
+                document.getElementById('welcome-screen').style.display='none';
+                launchApp();
+                setTimeout(()=>showPWAModal(),1000);
+            },500);
+        }
+
+        function showPWAModal(){
+            const dismissed=localStorage.getItem('pwa_modal_dismissed');
+            if(!dismissed){
+                document.getElementById('pwa-install-modal').style.display='flex';
+            }
+        }
+
+        function closePWAModal(){
+            document.getElementById('pwa-install-modal').style.display='none';
+            localStorage.setItem('pwa_modal_dismissed','true');
+        }
+
+        function launchApp(){
+            document.getElementById('app-content').classList.remove('hidden');
+            document.getElementById('app-content').style.opacity='1';
+            initLevelSystem();
+            if(db)initFirebaseReto();
+        }
+
+        function initLevelSystem(){
+            document.getElementById('end-date-text').innerText=endDate.toLocaleDateString('es-ES',{day:'numeric',month:'short'}).toUpperCase();
+            const pct=Math.min((dayOfCycle/30)*100,100);
+            document.getElementById('cycle-progress-bar').style.width=pct+'%';
+            document.getElementById('day-display').innerText='Dia '+dayOfCycle+' de 30';
+            document.getElementById('main-progress-bar').style.width=pct+'%';
+            document.getElementById('progress-percent').textContent=Math.round(pct)+'%';
+        }
+
+        function initFirebaseReto(){
+            db.ref('users/'+userId).once('value',(snap)=>{
+                const d=snap.val();
+                if(d&&d.progress)progressData=d.progress;
+                renderGrid();
+                updateStats();
+            });
+        }
+
+        function renderGrid(){
+            const grid=document.getElementById('days-grid');
+            grid.innerHTML='';
+            progressData.forEach((c,i)=>{
+                const d=document.createElement('div');
+                d.className=c?"day-check h-10 rounded-lg flex items-center justify-center completed":"day-check h-10 rounded-lg flex items-center justify-center border border-gray-700 bg-black/40";
+                d.innerHTML=c?'<i class="fas fa-check text-xs"></i>':'<span class="text-gray-500 font-heading text-xs font-bold">'+(i+1)+'</span>';
+                if(i<dayOfCycle)d.onclick=()=>toggleDay(i);
+                else{d.style.opacity="0.5";d.style.cursor="not-allowed"}
+                grid.appendChild(d);
+            });
+        }
+
+        function toggleDay(i){
+            progressData[i]=!progressData[i];
+            if(progressData[i])confetti({particleCount:50,spread:60,origin:{y:0.8},colors:['#FFD700','#FFF']});
+            if(db)db.ref('users/'+userId).update({name:userName,progress:progressData,lastUpdate:new Date().toISOString()});
+            renderGrid();
+            updateStats();
+        }
+
+        function updateStats(){
+            const completed=progressData.filter(Boolean).length;
+            const pct=Math.round((completed/30)*100);
+            document.getElementById('progress-text').textContent=pct+'%';
+            document.getElementById('progress-bar').style.width=pct+'%';
+        }
+
+        function togglePortionsGuide(){
+            const c=document.getElementById('portions-content');
+            const ch=document.getElementById('portions-chevron');
+            c.classList.toggle('hidden');
+            ch.style.transform=c.classList.contains('hidden')?'rotate(0deg)':'rotate(180deg)';
+        }
+
+        function contactForUpgrade(){
+            Swal.fire({title:'Evaluacion',text:'Contacta a tu coach para continuar.',icon:'info',confirmButtonText:'OK',confirmButtonColor:'#FFD700',background:'#111',color:'#fff'});
+        }
+
+        function switchTab(t){
+            ['A','B','Reto'].forEach(x=>{
+                document.getElementById('btn-'+x).classList.remove('active');
+                document.getElementById('content-'+x).classList.add('hidden');
+            });
+            document.getElementById('btn-'+t).classList.add('active');
+            document.getElementById('content-'+t).classList.remove('hidden');
+            document.getElementById('shopping-list-section').classList.toggle('hidden',t==='Reto');
+            window.scrollTo({top:300,behavior:'smooth'});
+        }
+    </script>
+</body>
+</html>
