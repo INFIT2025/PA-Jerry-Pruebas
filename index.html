@@ -31,6 +31,7 @@
         @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
         @keyframes bounce-soft{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
         @keyframes admin-pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)}70%{box-shadow:0 0 0 10px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+        @keyframes pulse-install{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,215,0,0.4)}50%{transform:scale(1.05);box-shadow:0 0 20px rgba(255,215,0,0.6)}}
         .fade-in{animation:fadeIn 0.5s ease-out forwards}
         .slide-up{animation:slideUp 0.6s ease-out forwards}
         .shimmer-text{background:linear-gradient(90deg,#FFD700 0%,#FFF 50%,#FFD700 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite}
@@ -46,7 +47,7 @@
         #welcome-screen{position:fixed;inset:0;z-index:95;background:linear-gradient(180deg,#000 0%,#0a0a0a 100%);display:none;flex-direction:column;overflow-y:auto}
         #level-expired{position:fixed;inset:0;z-index:9950;background:#050505;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
         #device-blocked{position:fixed;inset:0;z-index:9999;background:#0a0000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
-        #pwa-install-modal{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.95);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+        #pwa-install-modal{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.97);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
         #admin-mode-banner{position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#22c55e,#16a34a);color:#000;padding:8px 16px;text-align:center;font-weight:bold;font-size:11px;text-transform:uppercase;letter-spacing:1px;display:none;animation:admin-pulse 2s infinite}
         .spinner{width:40px;height:40px;border:3px solid rgba(255,215,0,0.3);border-radius:50%;border-top-color:#FFD700;animation:spin 1s ease-in-out infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
@@ -58,6 +59,11 @@
         ::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
         .install-btn-native{animation:bounce-soft 2s ease-in-out infinite}
         .pwa-icon{animation:float 3s ease-in-out infinite}
+        .install-fab{animation:pulse-install 2s ease-in-out infinite}
+        #install-fab-btn{position:fixed;bottom:100px;right:20px;z-index:9000;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#FFD700 0%,#FDB931 100%);display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,215,0,0.5);cursor:pointer;transition:transform 0.3s}
+        #install-fab-btn:hover{transform:scale(1.1)}
+        #install-fab-btn.hidden-fab{display:none}
+        #install-fab-btn.visible-fab{display:flex}
     </style>
 </head>
 <body class="overflow-x-hidden pb-24">
@@ -67,17 +73,39 @@
         <i class="fas fa-shield-alt mr-2"></i>MODO ADMIN - Vista de Previsualizacion (Llave Maestra)
     </div>
 
+    <!-- BOTON FLOTANTE DE INSTALACION PWA -->
+    <div id="install-fab-btn" onclick="showPWAModal()" title="Instalar App">
+        <i class="fas fa-download text-black text-xl"></i>
+        <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[8px] text-white flex items-center justify-center font-bold">!</span>
+    </div>
+
     <!-- MODAL DE INSTALACION PWA -->
     <div id="pwa-install-modal">
         <div class="max-w-sm w-full px-4">
             <div class="mb-6">
-                <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden shadow-2xl pwa-icon">
+                <div class="w-24 h-24 mx-auto rounded-2xl overflow-hidden shadow-2xl pwa-icon border-4 border-gold/30">
                     <img src="https://z-cdn-media.chatglm.cn/files/a1de3888-585c-4351-b383-9e9eb3867197.png?auth_key=1875235526-14bdfc3523474844a9ebc8b68ada0f59-0-b787c12e1275b7d78847b8629af22d3d" alt="INFIT" class="w-full h-full object-cover">
                 </div>
             </div>
             
             <h2 class="text-2xl font-heading font-bold text-white mb-2">Instala Tu Plan como App</h2>
             <p class="text-gray-400 text-sm mb-6">Acceso directo desde tu pantalla de inicio. Funciona sin internet.</p>
+
+            <div class="bg-gradient-to-r from-gold/20 to-yellow-500/10 border border-gold/40 rounded-xl p-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gold/30 flex items-center justify-center">
+                        <i class="fas fa-star text-gold"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-white font-bold text-sm">Beneficios de Instalar</p>
+                        <ul class="text-xs text-gray-300 mt-1">
+                            <li><i class="fas fa-check text-green-400 mr-1"></i> Acceso con 1 toque</li>
+                            <li><i class="fas fa-check text-green-400 mr-1"></i> Funciona sin internet</li>
+                            <li><i class="fas fa-check text-green-400 mr-1"></i> Notificaciones de progreso</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
             <div id="ios-instructions" class="hidden">
                 <div class="glass-panel rounded-xl p-5 mb-4 text-left">
@@ -91,7 +119,7 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-bold">Toca el boton Compartir</p>
-                                <p class="text-gray-500 text-xs">Cuadrado con flecha arriba, abajo a la derecha</p>
+                                <p class="text-gray-500 text-xs">Cuadrado con flecha arriba <i class="fas fa-arrow-up-from-bracket text-blue-400"></i>, abajo a la derecha</p>
                             </div>
                         </div>
                         <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
@@ -100,7 +128,7 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-bold">Busca "Agregar a pantalla de inicio"</p>
-                                <p class="text-gray-500 text-xs">Icono con signo + negro</p>
+                                <p class="text-gray-500 text-xs">Icono con signo + negro <i class="fas fa-plus text-green-400"></i></p>
                             </div>
                         </div>
                         <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
@@ -128,7 +156,7 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-bold">Toca los 3 puntos arriba a la derecha</p>
-                                <p class="text-gray-500 text-xs">Menu del navegador Chrome</p>
+                                <p class="text-gray-500 text-xs">Menu del navegador Chrome <i class="fas fa-ellipsis-vertical text-green-400"></i></p>
                             </div>
                         </div>
                         <div class="step-card flex items-start gap-3 bg-black/40 rounded-lg p-3">
@@ -178,7 +206,7 @@
             <button onclick="closePWAModal()" class="w-full py-3 bg-gray-800 rounded-xl text-white font-bold text-sm border border-gray-700 hover:bg-gray-700 transition">
                 Continuar en el navegador
             </button>
-            <p class="text-[10px] text-gray-600 mt-4">Podras instalarlo mas tarde desde el menu del navegador</p>
+            <p class="text-[10px] text-gray-600 mt-4">Podras instalarlo mas tarde desde el boton flotante</p>
         </div>
     </div>
 
@@ -215,10 +243,13 @@
             <h1 class="text-3xl font-heading font-bold italic mb-1 tracking-widest text-white">TU MEJOR <span class="text-gold">VERSION</span></h1>
             <p class="text-gray-400 text-xs uppercase tracking-widest mb-4">Acceso Nivel 1</p>
             <div class="px-2 mb-6"><p class="text-[13px] italic text-gray-300 font-serif leading-relaxed">"La preparacion de hoy es el exito de manana."</p></div>
-            <div class="bg-gray-900/60 border border-gray-800 p-4 rounded-xl mb-4">
-                <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">TIPO DE PLAN</p>
-                <p class="text-sm font-bold text-yellow-400 italic">Activo / Deportista</p>
+            
+            <!-- BADGE DEL TIPO DE PLAN -->
+            <div class="bg-gradient-to-r from-orange-500 to-amber-600 p-3 rounded-xl mb-4 flex items-center justify-center gap-2">
+                <i class="fas fa-dumbbell text-white text-lg"></i>
+                <span class="text-white font-bold text-sm">Activo / Deportista</span>
             </div>
+            
             <div class="bg-gray-900/60 border border-gray-800 p-4 rounded-xl mb-8">
                 <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">OBJETIVO VIP</p>
                 <p class="text-sm font-bold text-gold italic">Cocinar el domingo para la semana</p>
@@ -254,6 +285,21 @@
                     </div>
                     <p class="text-gray-400 text-sm leading-relaxed mt-4">Estas comenzando tu transformacion!</p>
                 </div>
+                
+                <!-- INFO DEL TIPO DE PLAN -->
+                <div class="glass-panel rounded-xl p-4 mb-6 fade-in">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-center">
+                            <i class="fas fa-dumbbell text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase">Tu Plan</p>
+                            <p class="text-white font-bold text-sm">Activo / Deportista</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400">+20% proteina natural (pollo, carne, huevos, pescado)</p>
+                </div>
+                
                 <div class="glass-panel rounded-2xl p-5 mb-6 fade-in">
                     <div class="flex items-center gap-2 mb-4">
                         <i class="fas fa-bullseye text-gold"></i>
@@ -374,7 +420,7 @@
         <!-- BANNER DE AVANCE -->
         <div class="px-5 pt-4">
             <div class="bg-gradient-to-r from-gold/20 via-yellow-500/10 to-gold/20 border-2 border-gold/40 rounded-xl p-4 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-full bg-gold/5"></div>
+                <div class="absolute top-0 left:0 w-full h-full bg-gold/5"></div>
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
@@ -434,6 +480,14 @@
                 </div>
                 <div class="mt-3 pt-3 border-t border-white/10"><p class="text-[10px] text-orange-400 font-bold"><i class="fas fa-dumbbell mr-1"></i> Plan Deportista Activo: +20% proteina</p></div>
                 
+                
+                <!-- BADGE TIPO DE PLAN -->
+                <div class="mt-3 pt-3 border-t border-white/10 flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-gradient-to-r from-orange-500 to-amber-600 flex items-center justify-center">
+                        <i class="fas fa-dumbbell text-white text-xs"></i>
+                    </div>
+                    <span class="text-xs text-gray-300">Activo / Deportista</span>
+                </div>
             </div>
         </section>
 
@@ -496,11 +550,11 @@
                 <h4 class="font-bold text-orange-400 text-sm"><i class="fas fa-utensils mr-2"></i>Domingo: Comida Trampa</h4>
                 <p class="text-xs text-gray-300 mt-1">Disfruta UNA comida libre.</p>
             </div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Huevos Revueltos con Nopales y Queso Panela: 3 huevos enteros + 3 claras de huevo revueltas con 100g de nopales cocidos picados y 40g de queso panela desmoronado. Acompañado de 2 tortillas de maíz (70g) y 30g de aguacate en rebanadas. Sazonar con sal, pimienta y salsa casera al gusto.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Yogur Griego con Fruta y Almendras: 200g de yogur griego natural sin azúcar (0% grasa) mezclado con 1/2 plátano (60g) en rodajas y 10g de almendras fileteadas.</p></div>
-            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Pechuga de Pollo a la Plancha con Arroz Integral y Espinacas: 250g de pechuga de pollo a la plancha (peso cocido). Servir con 200g de arroz integral cocido y 1 taza de espinacas salteadas con ajo (cocinadas con 5ml de aceite de oliva). Acompañar con 50g de aguacate en cubos.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Tacos de Pollo Deshebrado con Verduras: 150g de pechuga de pollo deshebrada (peso cocido) mezclada con salsa verde casera. Servir en 1 tortilla de maíz (35g) con 1 taza de zanahoria y pepino en bastones.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Filete de Tilapia con Brócoli y Frijoles: 200g de filete de tilapia a la plancha (cocinado con 5ml de aceite de oliva). Acompañado de 1 taza de brócoli al vapor y 1 taza de pimientos morrones salteados (sin aceite adicional). Servir con 1/2 taza de frijoles negros cocidos de la olla (90g, sin grasa).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Revuelto de Claras (280g o ~9 claras) con 1 Huevo entero, 50g de Avena en hojuelas (aproximadamente 1/2 taza en seco), 50g de aguacate (1/4 de aguacate grande) y 100g de espinacas. Cocinar con aceite de oliva.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Tacos de Pollo Pre-Entrenamiento: 120g de Pechuga de pollo deshebrada cocida, en 2 Tortillas de maíz (60g). Acompañar con salsa pico de gallo al gusto.</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Bistec de Res Magra (160g cocida) a la plancha con 220g de Arroz blanco cocido (aproximadamente 1.2 tazas) y 150g de brócoli al vapor. Aliñar con 5ml de Aceite de oliva (1 cucharadita).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Recuperación Post-Entrenamiento: 140g de Atún en agua (drenado, 1 lata grande) con 180g de Papa cocida (aproximadamente 1 papa mediana). Aliñar con 5ml de Aceite de oliva (1 cucharadita).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Pescado Blanco (200g cocido, e.g., Tilapia o Merluza) a la plancha, acompañado de 250g de verduras mixtas al vapor (calabacitas, pimiento). Aliñar con 10ml de Aceite de oliva (2 cucharaditas).</p></div>
         </div>
 
         <!-- VARIACION 2 -->
@@ -509,11 +563,11 @@
                 <span class="text-xs font-bold text-white">Variacion 2</span>
                 <span class="text-[10px] text-blue-400 float-right">Mar, Jue, Sab</span>
             </div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Chilaquiles Verdes con Pollo: 150g de pechuga de pollo deshebrada (peso cocido). 8 tortillas de maíz horneadas (100g) cortadas en triángulos y bañadas en salsa verde casera (tomate verde, chile serrano, cebolla, cilantro). Espolvorear con 40g de queso panela desmoronado.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Yogur Griego con Frutos Rojos y Almendras: 200g de yogur griego natural sin azúcar (0% grasa) mezclado con 1/2 taza de fresas picadas (70g) y 15g de almendras fileteadas.</p></div>
-            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Carne Asada con Nopales y Guacamole: 200g de arrachera (carne de res magra) asada (peso cocido, cocinada con 5ml de aceite de oliva). Acompañado de 150g de nopales cocidos y 80g de guacamole casero (hecho con 60g de aguacate). Servir con 2 tortillas de maíz (70g).</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Guacachile de Pollo y Frijoles: 150g de pechuga de pollo deshebrada (peso cocido). Acompañado de 1/2 taza de frijoles de la olla (90g, cocidos sin grasa). Servir con 1/2 taza de pepino y jitomate picado.</p></div>
-            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Filete de Tilapia con Espárragos y Quinoa: 200g de filete de tilapia a la plancha (cocinado con 5ml de aceite de oliva). Acompañado de 1 taza de espárragos al vapor y 1 taza de quinoa cocida (180g).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-sun"></i></div><h3 class="font-heading text-sm text-gray-200">DESAYUNO</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Omelette de 3 Huevos enteros con 100g de claras de huevo (~3 claras) y 100g de espinacas. Acompañar con 40g de Avena en hojuelas (aproximadamente 0.4 taza en seco) y 30g de aguacate (1/8 de aguacate grande).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-apple-alt"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK AM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Tostadas de Atún Pre-Entrenamiento: 140g de Atún en agua (drenado, 1 lata grande) sobre 100g de Papa cocida (aproximadamente media papa mediana). Aliñar con 5ml de Aceite de oliva (1 cucharadita).</p></div>
+            <div class="glass p-4 rounded-xl border border-gold/30 bg-gold/5"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-utensils"></i></div><h3 class="font-heading text-sm text-gray-200">COMIDA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Pechuga de Pollo (180g cocida) a la plancha con 250g de Arroz blanco cocido (aproximadamente 1.4 tazas) y 150g de brócoli al vapor. Aliñar con 10ml de Aceite de oliva (2 cucharaditas).</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-coffee"></i></div><h3 class="font-heading text-sm text-gray-200">SNACK PM</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Tacos de Carne Molida Post-Entrenamiento: 120g de Carne molida magra (90/10, cocida) en 2.5 Tortillas de maíz (75g). Acompañar con salsa verde al gusto.</p></div>
+            <div class="glass p-4 rounded-xl border border-gray-800"><div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gold text-xs"><i class="fas fa-moon"></i></div><h3 class="font-heading text-sm text-gray-200">CENA</h3></div><p class="text-xs text-gray-400 leading-relaxed pl-11">Mixto de Pescado y Claras: 200g de Pescado blanco (cocido) con 50g de claras de huevo líquidas (~1.5 claras). Acompañar con 200g de verduras al vapor (espárragos, champiñones). Aliñar con 5ml de Aceite de oliva (1 cucharadita).</p></div>
         </div>
 
         <!-- RETO -->
@@ -572,9 +626,9 @@
         <section class="p-5 mt-4" id="shopping-list-section">
             <div class="glass rounded-2xl p-6">
                 <h3 class="font-heading font-bold text-gold mb-4"><i class="fas fa-shopping-basket mr-2"></i>LISTA DE SUPER</h3>
-                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-drumstick-bite text-red-400 mr-2"></i>Proteinas</p><p class="text-xs text-gray-300">Pechuga de pollo (sin piel y sin hueso), Arrachera (carne de res magra), Huevos, Claras de huevo líquidas (o separar de huevos), Filete de tilapia, Queso panela (bajo en grasa), Yogur griego natural sin azúcar (0% grasa).</p></div>
-                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-bread-slice text-yellow-400 mr-2"></i>Carbohidratos</p><p class="text-xs text-gray-300">Tortillas de maíz, Arroz integral, Avena en hojuelas, Frijoles negros (secos o cocidos sin grasa), Frijoles de la olla (secos o cocidos sin grasa), Camote, Jícama, Plátano, Fresas, Papaya, Frutos rojos (mezcla de bayas), Quinoa.</p></div>
-                <div><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-leaf text-green-400 mr-2"></i>Verduras y Frutas</p><p class="text-xs text-gray-300">Nopales frescos, Espinacas frescas, Pepino, Jitomate (tomate rojo), Cebolla blanca, Chile serrano (al gusto), Cilantro fresco, Brócoli, Calabacitas (zucchini), Pimientos morrones (rojo, verde, amarillo), Zanahoria, Ejotes (judías verdes), Espárragos.</p></div>
+                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-drumstick-bite text-red-400 mr-2"></i>Proteinas</p><p class="text-xs text-gray-300">Pechuga de pollo sin piel ni hueso, Carne de res magra (ej. sirloin, arrachera o molida 90/10), Huevos enteros, Claras de huevo líquidas (envase), Pescado blanco (tilapia, merluza, bacalao), Atún en agua (latas), Camarones (frescos o congelados).</p></div>
+                <div class="mb-4"><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-bread-slice text-yellow-400 mr-2"></i>Carbohidratos</p><p class="text-xs text-gray-300">Avena en hojuelas, Arroz blanco (o integral), Papas (blancas o rojas), Tortillas de maíz, Galletas de arroz.</p></div>
+                <div><p class="font-bold text-white text-[10px] uppercase mb-2"><i class="fas fa-leaf text-green-400 mr-2"></i>Verduras y Frutas</p><p class="text-xs text-gray-300">Jitomate, Cebolla, Lechuga, Zanahoria, Espinacas.</p></div>
             </div>
         </section>
         <div class="h-10"></div>
@@ -585,7 +639,7 @@
         const MASTER_KEY="INFIT2026PRO";
         const userName="JERRY REYES";
         const userLevel=1;
-        const startDate=new Date("2026-04-06T00:00:00");
+        const startDate=new Date("2026-04-07T00:00:00");
         const endDate=new Date(startDate);
         endDate.setDate(startDate.getDate()+29);
         const today=new Date();
@@ -597,6 +651,7 @@
         let progressData=Array(30).fill(false);
         const userId=userName.toLowerCase().replace(/[^a-z0-9]/g,'');
         let isAdminMode=false;
+        let pwaInstalled=false;
 
         const firebaseConfig={
             apiKey:"AIzaSyAv1BfTCiQWgPXvtpMW14RdhbLyY4yGtiY",
@@ -648,6 +703,13 @@
             return'desktop';
         }
 
+        function isPWAInstalled(){
+            if(window.matchMedia('(display-mode: standalone)').matches)return true;
+            if(window.navigator.standalone===true)return true;
+            if(document.referrer.includes('android-app://'))return true;
+            return false;
+        }
+
         window.onload=()=>{
             const manifestBlob=new Blob([JSON.stringify({
                 name:"INFIT VIP - "+userName,short_name:"INFIT VIP",start_url:".",display:"standalone",
@@ -659,6 +721,8 @@
             manifestLink.href=URL.createObjectURL(manifestBlob);
             document.head.appendChild(manifestLink);
 
+            pwaInstalled=isPWAInstalled();
+
             const device=detectDevice();
             if(device==='ios')document.getElementById('ios-instructions').classList.remove('hidden');
             else if(device==='android')document.getElementById('android-instructions').classList.remove('hidden');
@@ -668,6 +732,14 @@
                 e.preventDefault();
                 deferredPrompt=e;
                 document.getElementById('install-btn-native').classList.remove('hidden');
+            });
+
+            window.addEventListener('appinstalled',()=>{
+                pwaInstalled=true;
+                document.getElementById('install-fab-btn').classList.remove('visible-fab');
+                document.getElementById('install-fab-btn').classList.add('hidden-fab');
+                closePWAModal();
+                Swal.fire({title:'Instalado!',text:'Tu plan esta listo en tu pantalla de inicio.',icon:'success',confirmButtonColor:'#FFD700',background:'#111',color:'#fff'});
             });
 
             if(isExpired){
@@ -833,20 +905,36 @@
             setTimeout(()=>{
                 document.getElementById('welcome-screen').style.display='none';
                 launchApp();
-                setTimeout(()=>showPWAModal(),800);
+                if(!pwaInstalled){
+                    setTimeout(()=>showPWAModal(),800);
+                }
             },500);
         }
 
         function showPWAModal(){
+            if(pwaInstalled)return;
+            
             const dismissed=localStorage.getItem('pwa_modal_dismissed_'+userId);
-            if(!dismissed){
-                document.getElementById('pwa-install-modal').style.display='flex';
-            }
+            const dismissedCount=parseInt(localStorage.getItem('pwa_dismissed_count_'+userId)||'0');
+            
+            document.getElementById('pwa-install-modal').style.display='flex';
+            document.getElementById('install-fab-btn').classList.remove('visible-fab');
+            document.getElementById('install-fab-btn').classList.add('hidden-fab');
         }
 
         function closePWAModal(){
             document.getElementById('pwa-install-modal').style.display='none';
+            
+            const currentCount=parseInt(localStorage.getItem('pwa_dismissed_count_'+userId)||'0')+1;
+            localStorage.setItem('pwa_dismissed_count_'+userId,currentCount.toString());
             localStorage.setItem('pwa_modal_dismissed_'+userId,'true');
+            
+            if(!pwaInstalled){
+                setTimeout(()=>{
+                    document.getElementById('install-fab-btn').classList.remove('hidden-fab');
+                    document.getElementById('install-fab-btn').classList.add('visible-fab');
+                },500);
+            }
         }
 
         function launchApp(){
@@ -854,6 +942,13 @@
             document.getElementById('app-content').style.opacity='1';
             initLevelSystem();
             if(db)initFirebaseReto();
+            
+            if(!pwaInstalled && !localStorage.getItem('pwa_modal_dismissed_'+userId)){
+                setTimeout(()=>{
+                    document.getElementById('install-fab-btn').classList.remove('hidden-fab');
+                    document.getElementById('install-fab-btn').classList.add('visible-fab');
+                },2000);
+            }
         }
 
         function initLevelSystem(){
